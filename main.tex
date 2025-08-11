@@ -1,0 +1,64 @@
+\documentclass{article}
+\usepackage[letterpaper]{geometry}
+\usepackage{setspace}
+\usepackage{amsmath}
+
+% text layout issues
+\setlength{\textwidth}{5.25in}
+\setlength{\oddsidemargin}{0.625in}
+\setlength{\textheight}{9.00in}
+\setlength{\topmargin}{-0.50in}
+\setstretch{1.08}
+\sloppy\sloppypar\raggedbottom
+\frenchspacing
+
+% math macros
+\newcommand{\dd}{\mathrm{d}}
+\newcommand{\semic}{\,;\,}
+\newcommand{\given}{\,|\,}
+
+\title{\bfseries%
+Group averaging and statistical marginalization:
+Is there a connection?}
+\author{Hogg for Villar}
+\date{August 2025}
+
+\begin{document}
+
+\maketitle
+
+In machine-learning contexts, there is a known trick---known but not (to my knowledge) widely used---that a non-equivariant machine-learning method can be made equivariant (and made more accurate) by \emph{group averaging}.
+That is, if a trained function $f(x\semic W)$, with weights $W$ found by training on training data, was trained to predict labels $y$, and if the true relationship between $x$ and $y$ is equivariant to a group $G$, then the group-averaged function $\bar{f}_G(x\semic W)$ will (in many cases) outperform $f(x\semic W)$ in predictive accuracy.
+The group averaging looks like
+\begin{align}
+    \bar{f}_G(x\semic W) &= \frac{1}{|G|}\,\sum_{g\in G} g_y^{-1}\cdot f(g_x\cdot x\semic W) ~,
+\end{align}
+where the outer $g_y^{-1}\cdot$ operator is the action of the (inverse) group operator $g^{-1}$ acting on the output $y$-space, and the inner $g_x\cdot$ is the action of the group operator $g$ acting on the input space.
+In the case of group-invariant functions (which are of most importance here), the outer $g_y^{-1}\cdot$ is just the identity.
+
+The conditions under which the group-averaged function $\bar{f}_G(x\semic W)$ provably makes better predictions for the labels $y$ are\ldots SOMETHING.
+But in practice it often seems to help.
+
+In inference contexts, \emph{marginalization} is used to remove nuisance parameters that are not of interest to the final inferences.
+If a likelihood function $p(y\given\theta,\alpha)$ depends on parameters of interest $\theta$ and nuisance parameters $\alpha$, and if the investigator has, as part of their model (or, if Bayesian, part of their beliefs about the world) a prior pdf $p(\alpha)$ for the nuisance parameters $\alpha$, then the likelihood can be marginalized such that it only depends on $\theta$:
+\begin{align}
+    p(y\given\theta) &= \int p(y\given\theta,\alpha)\,p(\alpha)\,\dd\alpha ~,
+\end{align}
+where the integral (implicitly) goes over the whole domain of the nuisances $\alpha$, and (implicitly) all pdfs are properly normalized.
+This marginalization can be done by frequentists if the distribution over $\alpha$ is part of their model.
+This marginalization \emph{must} be done by Bayesians if they want to make their best possible probabilistic predictions for $\theta$.
+In the end, Bayesian predictions are made by multiplying the likelihood by priors and renormalizing:
+\begin{align}
+    p(\theta\given y) = \frac{1}{Z}\,p(\theta)\int p(y\given\theta,\alpha)\,p(\alpha)\,\dd\alpha ~,
+\end{align}
+where $p(\theta\given y)$ is a pdf representing posterior beliefs about the parameters of interest $\theta$ (given the data $y$),
+$p(\theta)$ is a pdf representing prior beliefs,
+and $Z$ is a normalization constant to make the LHS a pdf.
+There are Cox theorems (HOGG CITE) that prove that Bayesian reasoners win bets against all other reasoners, in contexts in which the Bayesians bet against the other reasoners, so there are conditions in which this marginalization will provably lead to better predictions than any other operation.
+Also in practice this kind of marginalization is useful and works well.
+
+Now let's get more specific.
+The world generates a true label $\tilde{y}$ from features $x$ in such a way that it is \emph{invariant} to some latent angle or set of latent angles $\alpha$.
+This \ldots
+
+\end{document}
