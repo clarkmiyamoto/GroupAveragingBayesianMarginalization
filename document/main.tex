@@ -86,11 +86,19 @@ So a couple comments:
 	\item $\nu$ need not be unique.
 \end{itemize}
 You can see finding $k$-designs saves us time \& has an implicit bound on how we diverge in our sufficient statistic. In this statistics context, it seems that we'll only need a $2$-design.
-
+\\
+\\
 \emph{Example (Spherical Designs \cite{colbourn2006handbook, delsarte1977spherical}):} Let $p_k : \mathcal S(\mathbb R^d) \to \mathbb R$ be a polynomial in $d$ variables, with all terms homogenous in degree at most $k$. A set $X = \{x : x \in \mathcal S(\mathbb R^d)\}$ is a spherical $k$-design if 
 \begin{align}
 	\frac{1}{|X|} \sum_{x \in X}p_k(x) = \int_{\mathcal S(\mathbb R^d)} p_k(u) d\mu(u)
 \end{align} holds for all possible $p_t$, where $d\mu$ is the uniform, normalized spherical measure. A spherical $k$-design is also a $k'$-design for all $k' < k$. These designs are very pretty because the elements of their event space are vertices the certain platonic solids (for example: the regular ($k$ + 1)-gon in $\mathcal S^2$ is a spherical $k$-design).
+\\
+\\
+\emph{Example (Toric Design \cite{Iosue2024projectivetoric}):} A toric $k$-design is a measure space $(X \subset T^n, \Sigma, \nu)$ such that
+\begin{align}
+	\int_X \exp\left( i \sum_j=1^n \alpha_j \phi_j \right) d\nu(\phi) = \int_{T^n} \exp \left( i \sum_{j=1}^n \alpha_j \phi_j\right) d\mu_n (\phi)
+\end{align}
+for all $\alpha \in \mathbb Z^n$ satisfying $\sum_{j=1}^n |\alpha_j| \leq t$.
 
 
 \paragraph{Finding $k$-Designs}
@@ -99,7 +107,19 @@ You can see finding $k$-designs saves us time \& has an implicit bound on how we
 	\item  Clark: This reminds me of rejection sampling (like construct a set $A = \{\alpha_i\}_i$, and ask which element $\alpha \in A$ should I s.t. the error of your sufficient statistics changes the least, do this over a training dataset and test set.).
 \end{itemize}
 
+\section{Problem Statement}
+\subsection{Radial Velocity Data in Binary System}
+Consider a binary system. An observable is the radial velocity (this is the planet's velocity going towards/away from us). The velocity (predicted from theory) is non-linear in parameters $\theta = \{P, e, \omega, \phi_0, s\}$ (corresponding to the period of the orbit, the eccentricity, pericenter phase \& argument, and jitter of  the uncertainties. 
 
+The $\omega,\phi_0$ are of particular interest to us because (1) it's standard \cite{Price_Whelan_2017} to give them the prior $\text{Uniform}(0, 2\pi)$ and (2) they live on a $\mathbb T^2$ (2-torus). Meaning they're very amendable to $k$-designs.
+
+The state of the art method for sampling this posterior \cite{Price_Whelan_2017} relies on rejection sampling. Meaning it cost exponentially more (not actually sure, but it's more expensive) compute as the number of parameters increases. If we are able to construct a cheap \& stable marginalization over $\omega, \phi_0$ parameter, one would be able to run this inference over a larger dataset.
+
+So the research questions are:
+\begin{enumerate}
+	\item Are there other toric designs which are amendable to our problem? (i.e. we are not interested in integrals over complex exponentials)
+	\item If not, can we either derive them using math. Or can we construct an algorithm to find them? (i.e. via optimal control)
+\end{enumerate}
 
 % References
 \newpage
