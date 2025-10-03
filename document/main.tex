@@ -2,6 +2,9 @@
 \usepackage[letterpaper]{geometry}
 \usepackage{setspace}
 \usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{hyperref}
+
 
 % text layout issues
 \setlength{\textwidth}{5.25in}
@@ -20,7 +23,7 @@
 \title{\bfseries%
 Group averaging and statistical marginalization:
 Is there a connection?}
-\author{Hogg for Villar}
+\author{Hogg \& Clark for Villar}
 \date{August 2025}
 
 \begin{document}
@@ -60,5 +63,47 @@ Also in practice this kind of marginalization is useful and works well.
 Now let's get more specific.
 The world generates a true label $\tilde{y}$ from features $x$ in such a way that it is \emph{invariant} to some latent angle or set of latent angles $\alpha$.
 This \ldots
+
+\paragraph{Can we run this in practice?}
+Well... Running the marginalization is quite expensive. This is because we usually can't integrate it directly, so we usually MCMC it:
+\begin{align}
+	\int p(y | \theta, \alpha) p(\alpha) d\alpha & = \mathbb E_{\alpha \sim p(\alpha)}[p(y|\theta, \alpha)] \\
+	& \approx \frac{1}{N} \sum_{i=1}^N p(y|\theta, \alpha_i)
+\end{align}
+So if we were doing this inference on an incredibly large dataset (for example, all of the Gaia data), you're out of luck (in that particular example, you'll burn 20\% of Flatiron's yearly compute budget). 
+
+After looking at the equation above for sometime, you might ask, "What if I knew the `right' set of $\{\alpha_i\}_i$, that me closest to the `best' answer?" You can think of the discrete set $\{\alpha_i\}_i$ as a measure corresponding to a discrete distribution. And the measurement of best can be what recovers the $k$'th moments of a sufficient statistic. After some googling, you realize this is the study of...
+
+\paragraph{$k$-Designs}
+Let's start with a heuristic definition, and then talk about real examples. Consider a function $f_k$ which is a polynomial to the power $k$. We say probability distribution $\nu$ forms a \textbf{$k$-design} with respect to the target distribution $\mu$ if
+\begin{align}
+	\mathbb E_{x \sim \nu}[f_k(x)] = \mathbb E_{x \sim \mu}[f_k(x)]
+\end{align}
+So a couple comments:
+\begin{itemize}
+	\item A natural interpretation is the $k$-design preserves the $k$'th moment.
+	\item Say $\mu$ is a continuous distribution, $\nu$ need not be continuous, it can be discrete! This means instead of sampling, we can evaluate the function on a finite set of points-- very computationally quick! 
+	\item $\nu$ need not be unique.
+\end{itemize}
+You can see finding $k$-designs saves us time \& has an implicit bound on how we diverge in our sufficient statistic. In this statistics context, it seems that we'll only need a $2$-design.
+
+\emph{Example (Spherical Designs \cite{colbourn2006handbook, delsarte1977spherical}):} Let $p_k : \mathcal S(\mathbb R^d) \to \mathbb R$ be a polynomial in $d$ variables, with all terms homogenous in degree at most $k$. A set $X = \{x : x \in \mathcal S(\mathbb R^d)\}$ is a spherical $k$-design if 
+\begin{align}
+	\frac{1}{|X|} \sum_{x \in X}p_k(x) = \int_{\mathcal S(\mathbb R^d)} p_k(u) d\mu(u)
+\end{align} holds for all possible $p_t$, where $d\mu$ is the uniform, normalized spherical measure. A spherical $k$-design is also a $k'$-design for all $k' < k$. These designs are very pretty because the elements of their event space are vertices the certain platonic solids (for example: the regular ($k$ + 1)-gon in $\mathcal S^2$ is a spherical $k$-design).
+
+
+\paragraph{Finding $k$-Designs}
+\begin{itemize}
+	\item Dries: you can find them via optimal control (it's not easy but that is an algorithmic way of finding them).
+	\item  Clark: This reminds me of rejection sampling (like construct a set $A = \{\alpha_i\}_i$, and ask which element $\alpha \in A$ should I s.t. the error of your sufficient statistics changes the least, do this over a training dataset and test set.).
+\end{itemize}
+
+
+
+% References
+\newpage
+\bibliographystyle{plain}
+\bibliography{refs}
 
 \end{document}
